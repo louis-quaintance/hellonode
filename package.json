@@ -1,0 +1,15 @@
+{
+  "name": "hellonode",
+  "version": "1.0.0",
+  "description": "``` export DOCKER_HOST=127.0.0.1:2375 export DOCKER_MACHINE_NAME=default export DOCKER_TLS_VERIFY=1 export DOCKER_CERT_PATH=/Users/lquaintance/.docker/ ```",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "Louis Quaintance <louis.quaintance@first-utility.com>",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.13.4"
+  }
+}

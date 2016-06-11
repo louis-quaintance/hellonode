@@ -1,0 +1,47 @@
+node:
+  image: node:4.2
+  volumes:
+    - .:/usr/src
+  working_dir: /usr/src
+
+npm:
+  extends:
+    service: node
+  entrypoint: npm --harmony
+
+cucumber-tests:
+  extends:
+    service: npm
+  command: run test:functional
+  links:
+    - cucumber-app
+    - cucumber-wiremock
+    - selenium
+  environment:
+    - BROWSER=${BROWSER}
+
+cucumber-app:
+  extends:
+    service: npm
+  ports:
+    - "3000"
+  command: start
+  links:
+    - cucumber-wiremock
+  environment:
+    - TEST_PHASE=functional
+
+cucumber-wiremock:
+  image: rodolpheche/wiremock
+  ports:
+    - "8080"
+
+selenium:
+  image: selenium/standalone-${BROWSER}
+  environment:
+    - DBUS_SESSION_BUS_ADDRESS=/dev/null
+  volumes:
+    - /run/shm:/dev/shm
+  ports:
+    - 4444
+    - 5900

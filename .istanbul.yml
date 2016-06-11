@@ -1,0 +1,17 @@
+instrumentation:
+  root: .
+  extensions:
+    - .js
+reporting:
+  reports:
+    - html
+    - cobertura
+  dir: ./coverage
+#set these thresholds to meaningful values when the bug with check-coverage using raw coverage.json is closed
+#see https://github.com/istanbuljs/istanbul-api/issues/2
+check:
+  global:
+    statements: 0
+    functions: 0
+    branches: 0
+    lines: 0
