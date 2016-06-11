@@ -14,6 +14,10 @@ CLUSTER_NAME ?= hello-world
 
 PORT ?= 8080
 
+init-docker:
+	bash -c "clear && DOCKER_HOST=tcp://192.168.99.100:2376 DOCKER_CERT_PATH=/Users/lquaintance/.docker/machine/machines/default DOCKER_TLS_VERIFY=1 /bin/bash"
+.PHONY: init-docker
+
 ### Helpers
 all: build
 
@@ -43,7 +47,7 @@ run:
 	${DOCKER} run -d -p ${PORT}:${PORT} ${APP_IMAGE_NAME}
 .PHONY: run
 
-deploy: build
+deploy:
 	gcloud ${DOCKER} push ${APP_IMAGE_NAME}
 .PHONY: deploy
 
@@ -70,6 +74,22 @@ services:
 expose:
 	kubectl expose deployment ${DEPLOYMENT_NAME} --type="LoadBalancer"
 .PHONY: expose
+
+edit-deployment:
+	kubectl edit deployment ${DEPLOYMENT_NAME}
+.PHONY: edit-deployment
+
+trigger-deployment-update:
+	deployment ${DEPLOYMENT_NAME} edited
+.PHONY: trigger-deployment-update
+
+delete-deployment:
+	kubectl delete service,deployment ${DEPLOYMENT_NAME}
+.PHONY: delete-deployment
+
+delete-cluster:
+	gcloud container clusters delete ${CLUSTER_NAME}
+.PHONY: delete-cluster
 
 #kubectl logs <POD-NAME>
 #kubectl cluster-info
