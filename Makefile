@@ -9,6 +9,9 @@ DOCKER_RUN ?= ${DOCKER_COMPOSE} run --rm
 DOCKER_BASE_IMAGE ?= node
 NPM ?= ${DOCKER_RUN} -e NODE_ENV=${NODE_ENV} ${DOCKER_BASE_IMAGE} npm
 
+DEPLOYMENT_NAME ?= hello-node
+CLUSTER_NAME ?= hello-world
+
 PORT ?= 8080
 
 ### Helpers
@@ -43,3 +46,32 @@ run:
 deploy: build
 	gcloud ${DOCKER} push ${APP_IMAGE_NAME}
 .PHONY: deploy
+
+use-cluster:
+	gcloud container clusters get-credentials ${CLUSTER_NAME}
+.PHONY: use-cluster
+
+create-pod:
+	kubectl run ${DEPLOYMENT_NAME} --image=${APP_IMAGE_NAME} --port=8080
+.PHONY: create-pod
+
+deployments:
+	kubectl get deployments
+.PHONY: deployments
+
+pods:
+	kubectl get pods
+.PHONY: pods
+
+services:
+	kubectl get services ${DEPLOYMENT_NAME}
+.PHONY: services
+
+expose:
+	kubectl expose deployment ${DEPLOYMENT_NAME} --type="LoadBalancer"
+.PHONY: expose
+
+#kubectl logs <POD-NAME>
+#kubectl cluster-info
+#kubectl get events
+#kubectl config view
