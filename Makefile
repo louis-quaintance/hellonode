@@ -10,7 +10,8 @@ DOCKER_BASE_IMAGE ?= node
 NPM ?= ${DOCKER_RUN} -e NODE_ENV=${NODE_ENV} ${DOCKER_BASE_IMAGE} npm
 
 DEPLOYMENT_NAME ?= hello-node
-CLUSTER_NAME ?= hello-world
+CLUSTER_NAME ?= louis
+ZONE ?= europe-west1-d
 
 PORT ?= 8080
 
@@ -47,6 +48,10 @@ run:
 	${DOCKER} run -d -p ${PORT}:${PORT} ${APP_IMAGE_NAME}
 .PHONY: run
 
+functional-test:
+	${DOCKER_COMPOSE} kill && ${DOCKER_COMPOSE} rm -f && BROWSER=chrome ${DOCKER_COMPOSE} run --rm cucumber-tests
+.PHONY: functional-test
+
 deploy:
 	gcloud ${DOCKER} push ${APP_IMAGE_NAME}
 .PHONY: deploy
@@ -66,6 +71,10 @@ deployments:
 pods:
 	kubectl get pods
 .PHONY: pods
+
+auth:
+	gcloud auth login
+.PHONY: auth
 
 services:
 	kubectl get services ${DEPLOYMENT_NAME}
@@ -91,7 +100,10 @@ delete-cluster:
 	gcloud container clusters delete ${CLUSTER_NAME}
 .PHONY: delete-cluster
 
-#kubectl logs <POD-NAME>
-#kubectl cluster-info
-#kubectl get events
-#kubectl config view
+set-zone:
+	gcloud config set compute/zone ${ZONE}
+.PHONY: set-zone
+
+get-ips:
+	gcloud compute forwarding-rules list
+.PHONY: get-ips
